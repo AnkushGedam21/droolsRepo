@@ -1,0 +1,43 @@
+   package com.demo
+
+    import java.util.Arrays;
+
+   import com.demo.claimentryprofile.enums.UHNSpecificClientId;
+   import com.demo.claimentryprofile.enums.OXFORDSpecificClientId;
+   import com.demo.claimentryprofile.enums.UserClass;
+   import com.demo.claimentryprofile.model.ClientIdentifier;
+   import com.demo.claimentryprofile.model.User;
+
+   global com.demo.claimentryprofile.response.ClaimEntryProfileRuleResponse claimEntryProfileRuleResponse;
+   dialect "mvel"
+
+   rule "GetProfileClaimFieldsUHN"
+   when
+   clientIdentifier : ClientIdentifier(UHNSpecificClientId.contains(name))
+   then
+   claimEntryProfileRuleResponse.resetProfileRuleClientId();
+   claimEntryProfileRuleResponse.setProfileClaimFieldsUHN(true);
+
+   end
+   rule "RuleGetProfileClaimFieldsOXFORD"
+         when
+         clientIdentifier : ClientIdentifier(OXFORDSpecificClientId.contains(name))
+         then
+         claimEntryProfileRuleResponse.resetProfileRuleClientId();
+         claimEntryProfileRuleResponse.setProfileClaimFieldsOXFORDS(true);
+
+         end
+   rule "getUserTypeInternal"
+   when
+   user : User(userClass.equals(UserClass.INTERNAL))
+   then
+   claimEntryProfileRuleResponse.setUserInternal(true);
+   claimEntryProfileRuleResponse.setIsUserExternal(false);
+   end
+   rule "getUserTypeClient"
+   when
+   user : User(userClass.equals(UserClass.CLIENT))
+   then
+   claimEntryProfileRuleResponse.setIsUserExternal(true);
+   claimEntryProfileRuleResponse.setUserInternal(false);
+   end
